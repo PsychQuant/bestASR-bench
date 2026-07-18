@@ -1,0 +1,26 @@
+name: leaderboard
+on:
+  push:
+    branches: [main]
+    paths:
+      - "measurements/**"
+      - "corpus/**"
+      - "tools/leaderboard.py"
+permissions:
+  contents: write
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regenerate LEADERBOARD.md
+        run: python3 tools/leaderboard.py .
+      - name: Commit if changed
+        run: |
+          if ! git diff --quiet -- LEADERBOARD.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add LEADERBOARD.md
+            git commit -m "chore: regenerate leaderboard"
+            git push
+          fi
