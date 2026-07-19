@@ -4,8 +4,9 @@
 Validates every measurements/*.jsonl row:
   1. required keys present (MeasurementRow snake_case + denormalized
      contributor / chip / unified_memory_gb — see SUBMISSION_FORMAT.md)
-  2. ranges: 0 <= error_rate <= 1, rtf > 0, peak_memory_gb > 0,
-     unified_memory_gb > 0, metric_kind in {wer, cer}
+  2. ranges: 0 <= error_rate <= 1, rtf > 0, peak_memory_gb >= 0 (0 = the
+     probe could not capture peak memory for that backend — a legitimate
+     bestASR measurement), unified_memory_gb > 0, metric_kind in {wer, cer}
   3. corpus_id exists in corpus/manifest.jsonl
   4. no duplicate rows repo-wide (bitwise-identical JSON)
 Soft outlier flag (never fails CI): a row whose error_rate deviates from the
@@ -66,8 +67,8 @@ def main():
                 errors.append(f"{where}: error_rate out of [0,1]")
             if not (isinstance(row["rtf"], (int, float)) and row["rtf"] > 0):
                 errors.append(f"{where}: rtf must be > 0")
-            if not (isinstance(row["peak_memory_gb"], (int, float)) and row["peak_memory_gb"] > 0):
-                errors.append(f"{where}: peak_memory_gb must be > 0")
+            if not (isinstance(row["peak_memory_gb"], (int, float)) and row["peak_memory_gb"] >= 0):
+                errors.append(f"{where}: peak_memory_gb must be >= 0")
             if not (isinstance(row["unified_memory_gb"], (int, float)) and row["unified_memory_gb"] > 0):
                 errors.append(f"{where}: unified_memory_gb must be > 0")
             if row["metric_kind"] not in ("wer", "cer"):
