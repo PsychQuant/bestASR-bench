@@ -4,7 +4,7 @@
 Validates every measurements/*.jsonl row:
   1. required keys present (MeasurementRow snake_case + denormalized
      contributor / chip / unified_memory_gb — see SUBMISSION_FORMAT.md)
-  2. ranges: 0 <= error_rate <= 1, rtf > 0, peak_memory_gb >= 0 (0 = the
+  2. ranges: 0 <= error_rate <= 10, rtf > 0, peak_memory_gb >= 0 (0 = the
      probe could not capture peak memory for that backend — a legitimate
      bestASR measurement), unified_memory_gb > 0, metric_kind in {wer, cer}
   3. corpus_id exists in corpus/manifest.jsonl
@@ -63,8 +63,10 @@ def main():
             if missing:
                 errors.append(f"{where}: missing keys {sorted(missing)}")
                 continue
-            if not (isinstance(row["error_rate"], (int, float)) and 0 <= row["error_rate"] <= 1):
-                errors.append(f"{where}: error_rate out of [0,1]")
+            # WER/CER legitimately exceed 1.0 on insertion-heavy garbage output
+            # (e.g. an English-only backend on zh audio); 10 = sanity ceiling.
+            if not (isinstance(row["error_rate"], (int, float)) and 0 <= row["error_rate"] <= 10):
+                errors.append(f"{where}: error_rate out of [0,10]")
             if not (isinstance(row["rtf"], (int, float)) and row["rtf"] > 0):
                 errors.append(f"{where}: rtf must be > 0")
             if not (isinstance(row["peak_memory_gb"], (int, float)) and row["peak_memory_gb"] >= 0):
