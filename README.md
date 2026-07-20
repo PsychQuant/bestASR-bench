@@ -9,7 +9,7 @@ Sibling of [bestASR](https://github.com/PsychQuant/bestASR), which measures how 
 | Path | Contents |
 |---|---|
 | `measurements/*.jsonl` | Community-submitted measurement rows (`machine × backend × model × corpus → WER/CER, RTF, memory`), append-only via PR |
-| `corpus/manifest.jsonl` | Canonical corpus manifest — identity hashes + license + attribution, pointing into the [bestasr-corpus](https://huggingface.co/datasets) HF dataset (audio never lives here) |
+| `corpus/manifest.jsonl` | Canonical corpus manifest — identity hashes + license + attribution, pointing into the [bestasr-corpus](https://huggingface.co/datasets/PsychQuant/bestasr-corpus) HF dataset (audio never lives here) |
 | `leaderboard/` | Auto-generated from measurements (median ± MAD, self-reported, N contributors) |
 | `tools/` | CI validators + leaderboard generator |
 
